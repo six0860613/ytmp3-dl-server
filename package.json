@@ -1,0 +1,32 @@
+{
+  "name": "ytmp3-dl-server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "start": "node dist/index.js",
+    "dev": "tsup src/index.ts --watch --onSuccess \"npm run start\"",
+    "build": "tsup src/index.ts --minify"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@distube/ytdl-core": "^4.14.4",
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.7.5",
+    "cors": "^2.8.5",
+    "express": "^4.21.0",
+    "ffmpeg-static": "^5.2.0",
+    "ts-node": "^10.9.2",
+    "tsup": "^8.3.0",
+    "typescript": "^5.6.2"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "nodemon": "^3.1.7"
+  }
+}

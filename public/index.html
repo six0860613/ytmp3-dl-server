@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Download MP3</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+
+<body>
+  <div class="container mt-5">
+    <h1 class="text-center">YouTube to MP3 Downloader</h1>
+    <div class="row justify-content-center mt-4">
+      <div class="col-md-6">
+        <div class="form-group">
+          <input id="url-input" type="text" class="form-control" placeholder="Enter YouTube URL">
+        </div>
+        <button id="download-btn" class="btn btn-primary btn-block">Download MP3</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('download-btn').addEventListener('click', () => {
+      const url = document.getElementById('url-input').value;
+      if (!url) {
+        alert('Please enter a YouTube URL');
+        return;
+      }
+      fetch(`/download?url=${encodeURIComponent(url)}`,)
+        .then(response => response.json())
+        .then(json => console.log('Success:', json))
+        .catch(error => console.error('Error:', error));
+    });
+  </script>
+</body>
+
+</html>

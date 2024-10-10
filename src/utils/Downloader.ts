@@ -10,20 +10,15 @@ import { YtdlMp3Error, isDirectory, removeParenthesizedText } from "./functions"
 export type DownloaderOptions = {
 	outputDir?: string;
 	silentMode?: boolean;
-	verifyTags?: boolean;
 };
 
 export class Downloader {
 	static defaultDownloadsDir = path.join(os.homedir(), "Downloads");
 
 	outputDir: string;
-	silentMode: boolean;
-	verifyTags: boolean;
 
-	constructor({ outputDir, silentMode, verifyTags }: DownloaderOptions) {
+	constructor({ outputDir }: DownloaderOptions) {
 		this.outputDir = outputDir ?? Downloader.defaultDownloadsDir;
-		this.silentMode = Boolean(silentMode);
-		this.verifyTags = Boolean(verifyTags);
 	}
 
 	async downloadSong(url: string): Promise<string> {
@@ -38,17 +33,16 @@ export class Downloader {
 
 		const formatConverter = new FormatConverter();
 
-		const outputFile = this.getOutputFile(videoInfo.videoDetails.title);
+		const validPath = this.getValidFilePath(videoInfo.videoDetails.title);
+		const newPath = `${this.outputDir}${videoInfo.videoDetails.title}.mp3`.replace(/\//gm, "_");
 		const videoData = await this.downloadVideo(videoInfo).catch((error) => {
 			throw new YtdlMp3Error("Failed to download video", {
 				cause: error,
 			});
 		});
 
-		formatConverter.videoToAudio(videoData, outputFile);
-
-		if (!this.silentMode) console.log(`Done! Output file: ${outputFile}`);
-		return outputFile;
+		formatConverter.videoToAudio(videoData, validPath, newPath);
+		return newPath;
 	}
 
 	/** Returns the content from the video as a buffer */
@@ -69,7 +63,7 @@ export class Downloader {
 	}
 
 	/** Returns the absolute path to the audio file to be downloaded */
-	private getOutputFile(videoTitle: string): string {
+	private getValidFilePath(videoTitle: string): string {
 		const baseFileName = removeParenthesizedText(videoTitle)
 			.replace(/[^a-z0-9]/gi, "_")
 			.split("_")

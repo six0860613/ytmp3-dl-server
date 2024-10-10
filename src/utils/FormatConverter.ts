@@ -15,12 +15,15 @@ export class FormatConverter {
 		this.ffmpegBinary = ffmpeg;
 	}
 
-	videoToAudio(videoData: Buffer, outputFile: string): void {
-		if (fs.existsSync(outputFile)) {
-			throw new YtdlMp3Error(`Output file already exists: ${outputFile}`);
+	videoToAudio(videoData: Buffer, validPath: string, newPath: string): void {
+		if (fs.existsSync(validPath)) {
+			throw new YtdlMp3Error(`Output file already exists: ${validPath}`);
 		}
-		cp.execSync(`${this.ffmpegBinary} -loglevel 24 -i pipe:0 -vn -sn -c:a mp3 -ab 192k ${outputFile}`, {
+		cp.execSync(`${this.ffmpegBinary} -loglevel 24 -i pipe:0 -vn -sn -c:a mp3 -ab 192k ${validPath}`, {
 			input: videoData,
+		});
+		fs.rename(validPath, newPath, (err) => {
+			if (err) console.error("RENAME ERR:", err);
 		});
 	}
 }

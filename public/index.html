@@ -22,16 +22,19 @@
   </div>
 
   <script>
-    document.getElementById('download-btn').addEventListener('click', () => {
+    document.getElementById('download-btn').addEventListener('click', async () => {
       const url = document.getElementById('url-input').value;
       if (!url) {
         alert('Please enter a YouTube URL');
         return;
       }
-      fetch(`/download?url=${encodeURIComponent(url)}`,)
-        .then(response => response.json())
-        .then(json => console.log('Success:', json))
-        .catch(error => console.error('Error:', error));
+      const response = await fetch(`/download?url=${encodeURIComponent(url)}`);
+      if (response.ok) {
+        const data = await response.json();
+        console.log({ data });
+      } else {
+        alert('Error uploading or converting the video.');
+      }
     });
   </script>
 </body>

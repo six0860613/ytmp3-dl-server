@@ -15,14 +15,15 @@ app.get("/download", async (req, res) => {
 	try {
 		const videoUrl = req.query.url as string;
 
-		console.log(videoUrl);
+		console.log("Start download:", videoUrl);
 
 		const downloader = new Downloader({
 			outputDir: path.join(__dirname, "../"),
 		});
 
-		const saveAt = await downloader.downloadSong(videoUrl);
-		res.json({ saveAt });
+		const fileUrl = await downloader.downloadSong(videoUrl);
+
+		res.json({ fileUrl });
 	} catch (error) {
 		console.log(error);
 		res.status(500).json({ error: "An error occurred while downloading the song." });

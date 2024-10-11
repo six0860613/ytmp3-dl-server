@@ -5,7 +5,7 @@ import ytdl from "@distube/ytdl-core";
 import type { videoInfo as VideoInfo } from "@distube/ytdl-core";
 
 import { FormatConverter } from "./FormatConverter";
-import { YtdlMp3Error, isDirectory, removeParenthesizedText } from "./functions";
+import { YtdlMp3Error, isDirectory } from "./functions";
 
 export type DownloaderOptions = {
 	outputDir?: string;
@@ -33,8 +33,8 @@ export class Downloader {
 
 		const formatConverter = new FormatConverter();
 
-		const validPath = this.getValidFilePath(videoInfo.videoDetails.title);
-		const newPath = `${this.outputDir}${videoInfo.videoDetails.title}.mp3`.replace(/\//gm, "_");
+		const validPath = path.join(__dirname, "../tmp/temp.mp3");
+		const newPath = `${this.outputDir}${videoInfo.videoDetails.title.replace(/[\/／]/gm, "_")}.mp3`;
 		const videoData = await this.downloadVideo(videoInfo).catch((error) => {
 			throw new YtdlMp3Error("Failed to download video", {
 				cause: error,
@@ -60,16 +60,5 @@ export class Downloader {
 				reject(err);
 			});
 		});
-	}
-
-	/** Returns the absolute path to the audio file to be downloaded */
-	private getValidFilePath(videoTitle: string): string {
-		const baseFileName = removeParenthesizedText(videoTitle)
-			.replace(/[^a-z0-9]/gi, "_")
-			.split("_")
-			.filter((element) => element)
-			.join("_")
-			.toLowerCase();
-		return path.join(this.outputDir, baseFileName + ".mp3");
 	}
 }

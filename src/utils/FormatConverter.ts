@@ -22,8 +22,11 @@ export class FormatConverter {
 		cp.execSync(`${this.ffmpegBinary} -loglevel 24 -i pipe:0 -vn -sn -c:a mp3 -ab 192k ${validPath}`, {
 			input: videoData,
 		});
-		fs.rename(validPath, newPath, (err) => {
-			if (err) console.error("RENAME ERR:", err);
+		fs.copyFile(validPath, newPath, (copyErr) => {
+			if (copyErr) throw new YtdlMp3Error(`Copyfile error: ${validPath} -> ${newPath}`);
+			fs.unlink(validPath, (unlinkErr) => {
+				if (unlinkErr) throw new YtdlMp3Error(`Unlink error: ${validPath}`);
+			});
 		});
 	}
 }

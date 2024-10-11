@@ -6,6 +6,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Download MP3</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    .loading-spinner {
+      display: none;
+      width: 3rem;
+      height: 3rem;
+      border: 0.4rem solid #f3f3f3;
+      border-top: 0.4rem solid #007bff;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 1rem auto;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
 </head>
 
 <body>
@@ -17,6 +39,12 @@
           <input id="url-input" type="text" class="form-control" placeholder="Enter YouTube URL">
         </div>
         <button id="download-btn" class="btn btn-primary btn-block">Download MP3</button>
+
+        <!-- Loading spinner -->
+        <div id="loading-spinner" class="loading-spinner"></div>
+
+        <!-- Status message -->
+        <div id="status-message" class="alert text-center mt-3" role="alert" style="display: none;"></div>
       </div>
     </div>
   </div>
@@ -24,16 +52,44 @@
   <script>
     document.getElementById('download-btn').addEventListener('click', async () => {
       const url = document.getElementById('url-input').value;
+      const statusMessage = document.getElementById('status-message');
+      const loadingSpinner = document.getElementById('loading-spinner');
+
       if (!url) {
-        alert('Please enter a YouTube URL');
+        statusMessage.textContent = 'Please enter a YouTube URL';
+        statusMessage.className = 'alert alert-danger';
+        statusMessage.style.display = 'block';
         return;
       }
-      const response = await fetch(`/download?url=${encodeURIComponent(url)}`);
-      if (response.ok) {
-        const data = await response.json();
-        console.log({ data });
-      } else {
-        alert('Error uploading or converting the video.');
+
+      // Show loading spinner and hide status message
+      loadingSpinner.style.display = 'block';
+      statusMessage.style.display = 'none';
+      document.getElementById('download-btn').disabled = true;
+
+      try {
+        const response = await fetch(`/download?url=${encodeURIComponent(url)}`);
+
+        if (response.ok) {
+          const data = await response.json(); // Assuming backend returns a 'success' string
+
+          if (data && data.fileUrl) {
+            statusMessage.textContent = `MP3 conversion successful! You can find it in ${data.fileUrl}`;
+            statusMessage.className = 'alert alert-success';
+          } else {
+            throw new Error('Failed to convert');
+          }
+        } else {
+          throw new Error('Request failed');
+        }
+      } catch (error) {
+        statusMessage.textContent = 'Error: Unable to process your request. Please try again.';
+        statusMessage.className = 'alert alert-danger';
+      } finally {
+        // Hide loading spinner and show status message
+        loadingSpinner.style.display = 'none';
+        statusMessage.style.display = 'block';
+        document.getElementById('download-btn').disabled = false;
       }
     });
   </script>

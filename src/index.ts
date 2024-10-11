@@ -2,6 +2,8 @@ import express from "express";
 import cors from "cors";
 import path from "path";
 import { Downloader } from "./utils/Downloader";
+import dotenv from "dotenv";
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -17,9 +19,8 @@ app.get("/download", async (req, res) => {
 
 		console.log("Start download:", videoUrl);
 
-		const downloader = new Downloader({
-			outputDir: path.join(__dirname, "../"),
-		});
+		const outputDir = process.env.OUTPUT_DIR || path.join(__dirname, "../");
+		const downloader = new Downloader({ outputDir });
 
 		const fileUrl = await downloader.downloadSong(videoUrl);
 

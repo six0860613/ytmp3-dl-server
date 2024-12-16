@@ -34,7 +34,10 @@ export class Downloader {
 		const formatConverter = new FormatConverter();
 
 		const validPath = path.join(__dirname, "../tmp/temp.mp3");
-		const newPath = `${this.outputDir}${videoInfo.videoDetails.title.replace(/[\/／]/gm, "_")}.mp3`;
+		const newPath = path.join(
+			this.outputDir,
+			`${videoInfo.videoDetails.title.replace(/[/\\?%*:|"<>\/／\\]/gm, "_")}.mp3`
+		);
 		const videoData = await this.downloadVideo(videoInfo).catch((error) => {
 			throw new YtdlMp3Error("Failed to download video", {
 				cause: error,

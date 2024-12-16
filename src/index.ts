@@ -24,6 +24,8 @@ app.get("/download", async (req, res) => {
 
 		const fileUrl = await downloader.downloadSong(videoUrl);
 
+		console.log("File is saved at:", fileUrl);
+
 		res.json({ fileUrl });
 	} catch (error) {
 		console.log(error);
